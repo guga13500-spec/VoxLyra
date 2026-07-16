@@ -27,14 +27,26 @@ jobs:
         run: $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0" --sdk_root=$ANDROID_HOME 2>&1 || true
 
       - name: Build
+        id: build
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon --stacktrace 2>&1
+          ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee gradle_output.log
+        continue-on-error: true
 
-      - name: Find and upload APK
+      - name: Upload logs on failure
+        if: steps.build.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
-          name: VoxLyra-APK
-          path: |
-            app/build/outputs/apk/debug/*.apk
-            app/build/outputs/**/*.apk
+          name: build-logs
+          path: gradle_output.log
+
+      - name: Upload APK
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: app/build/outputs/apk/debug/*.apk
+
+      - name: Fail if build failed
+        if: steps.build.outcome == 'failure'
+        run: exit 1
