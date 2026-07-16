@@ -1,36 +1,27 @@
-name: Build VoxLyra APK
+name: Build
 
-on:
-  push:
-    branches: [ "*" ]
-  workflow_dispatch:
+on: [push, workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up JDK 17
+      - name: JDK
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-
-      - name: Setup Android SDK
+      - name: Setup Android
         uses: android-actions/setup-android@v3
-
-      - name: Grant execute permission
+      - name: Chmod
         run: chmod +x gradlew
-
-      - name: Build with Gradle
-        run: ./gradlew assembleDebug --stacktrace --no-daemon 2>&1
-
-      - name: Upload APK
-        if: success() || failure()
+      - name: Build
+        run: |
+          ./gradlew assembleDebug --stacktrace 2>&1
+      - name: Upload
         uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: VoxLyra-APK
+          name: apk
           path: app/build/outputs/apk/debug/*.apk
-          retention-days: 7
