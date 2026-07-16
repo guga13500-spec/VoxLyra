@@ -6,12 +6,13 @@ pluginManagement {
     }
 }
 
-dependencyResolution {
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
     }
 }
 
-rootProject.Name = "VoxLyra"
+rootProject.name = "VoxLyra"
 include(":app")
