@@ -31,14 +31,10 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon --stacktrace 2>&1
 
-      - name: Find APK
-        id: find_apk
-        run: |
-          find . -name "*.apk" -type f
-          echo "APK_PATH=$(find . -name '*.apk' -type f | head -1)" >> $GITHUB_OUTPUT
-
-      - name: Upload APK
+      - name: Find and upload APK
         uses: actions/upload-artifact@v4
         with:
           name: VoxLyra-APK
-          path: ${{ steps.find_apk.outputs.APK_PATH }}
+          path: |
+            app/build/outputs/apk/debug/*.apk
+            app/build/outputs/**/*.apk
